@@ -50,33 +50,30 @@ export default function RegisterPage() {
       if (signUpError) throw signUpError;
       if (!authData.user) throw new Error('Failed to create user');
 
-      // Create profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: authData.user.id,
-          user_type: userType!,
-          full_name: fullName,
-          phone: phone || null,
-        });
+      // Create profile using API route (bypasses RLS)
+      const profileResponse = await fetch('/api/create-profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: authData.user.id,
+          userType: userType!,
+          fullName,
+          phone,
+          // Partner-specific fields
+          companyName,
+          serviceType,
+          city,
+          contactName,
+          contactEmail,
+          description,
+        }),
+      });
 
-      if (profileError) throw profileError;
-
-      // If partner, create partner record
-      if (userType === 'partner') {
-        const { error: partnerError } = await supabase
-          .from('partners')
-          .insert({
-            user_id: authData.user.id,
-            company_name: companyName,
-            service_type: serviceType,
-            city,
-            contact_name: contactName,
-            contact_email: contactEmail,
-            description: description || null,
-          });
-
-        if (partnerError) throw partnerError;
+      if (!profileResponse.ok) {
+        const errorData = await profileResponse.json();
+        throw new Error(errorData.error || 'Failed to create profile');
       }
 
       // Redirect to appropriate dashboard

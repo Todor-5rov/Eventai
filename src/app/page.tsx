@@ -20,7 +20,7 @@ export default function LandingPage() {
           .from('profiles')
           .select('user_type')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
         if (profile) {
           setUserType(profile.user_type as 'organizer' | 'partner');
         }

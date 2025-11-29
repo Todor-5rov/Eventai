@@ -28,11 +28,16 @@ export default function LoginPage() {
 
       if (data.user) {
         // Get user profile to determine redirect
-        const { data: profile } = await supabase
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('user_type')
           .eq('id', data.user.id)
-          .single();
+          .maybeSingle();
+
+        if (profileError) {
+          console.error('Profile fetch error:', profileError);
+          throw new Error('Failed to fetch user profile');
+        }
 
         if (profile) {
           if (profile.user_type === 'organizer') {
@@ -40,6 +45,8 @@ export default function LoginPage() {
           } else {
             router.push('/dashboard/partner');
           }
+        } else {
+          throw new Error('User profile not found. Please contact support.');
         }
       }
     } catch (err) {

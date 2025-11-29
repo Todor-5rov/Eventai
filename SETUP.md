@@ -1,6 +1,6 @@
 # EventAI - Setup Instructions
 
-Complete setup guide for the EventAI platform.
+Complete setup guide for the EventAI platform.w
 
 ## Quick Start (5 minutes)
 
