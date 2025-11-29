@@ -49,6 +49,7 @@ GMAIL_USER_EMAIL=notifications@your-app.com
 5. Click "Run"
 
 This will create:
+
 - All necessary tables (profiles, partners, event_requests, etc.)
 - Row Level Security policies
 - Indexes for performance
@@ -67,6 +68,7 @@ This will create:
 Click on the `event-files` bucket, then "Policies":
 
 1. **Upload policy:**
+
 ```sql
 CREATE POLICY "Authenticated users can upload files"
 ON storage.objects FOR INSERT
@@ -75,6 +77,7 @@ WITH CHECK (bucket_id = 'event-files');
 ```
 
 2. **Download policy:**
+
 ```sql
 CREATE POLICY "Anyone can download files"
 ON storage.objects FOR SELECT
@@ -98,6 +101,7 @@ npm run dev
 ```
 
 Try to:
+
 1. Register a new account
 2. Log in
 3. Check if the profile is created in the database
@@ -118,6 +122,7 @@ The schema includes these main tables:
 ### Row Level Security (RLS)
 
 All tables have RLS enabled with policies that ensure:
+
 - Users can only view their own data
 - Organizers can't see partner data
 - Partners can only see inquiries sent to them
@@ -135,18 +140,21 @@ All tables have RLS enabled with policies that ensure:
 ### Automatic Backups
 
 Supabase automatically backs up your database:
+
 - Free tier: Daily backups for 7 days
 - Pro tier: Daily backups for 30 days
 
 ### Manual Backup
 
 To create a manual backup:
+
 1. Go to "Database" → "Backups"
 2. Click "Create backup"
 
 ## Monitoring
 
 Monitor your usage:
+
 1. Go to "Settings" → "Usage"
 2. Check:
    - Database size
@@ -155,6 +163,7 @@ Monitor your usage:
    - API requests
 
 Free tier limits:
+
 - 500MB database
 - 1GB file storage
 - 2GB bandwidth per month
@@ -162,16 +171,19 @@ Free tier limits:
 ## Troubleshooting
 
 **"Failed to fetch" error:**
+
 - Check your `NEXT_PUBLIC_SUPABASE_URL` is correct
 - Ensure you're using the correct API keys
 - Check if RLS policies are blocking the query
 
 **Authentication not working:**
+
 - Verify email auth is enabled
 - Check if user exists in `auth.users` table
 - Ensure profile is created in `profiles` table
 
 **Storage upload fails:**
+
 - Verify the `event-files` bucket exists
 - Check storage policies are set correctly
 - Ensure file size is within limits
@@ -181,4 +193,3 @@ Free tier limits:
 - [Supabase Documentation](https://supabase.com/docs)
 - [Supabase JavaScript Client](https://supabase.com/docs/reference/javascript)
 - [Row Level Security](https://supabase.com/docs/guides/auth/row-level-security)
-

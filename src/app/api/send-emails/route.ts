@@ -37,8 +37,9 @@ export async function POST(request: NextRequest) {
       throw new Error('Event not found');
     }
 
-    const organizerProfile = eventData.profiles as any;
-    const organizerEmail = (await supabase.auth.admin.getUserById(organizerProfile.id)).data.user?.email;
+    // Get organizer email from auth
+    const { data: { user: organizerUser } } = await supabase.auth.admin.getUserById(eventData.organizer_id);
+    const organizerEmail = organizerUser?.email;
 
     if (!organizerEmail) {
       throw new Error('Organizer email not found');

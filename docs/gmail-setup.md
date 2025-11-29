@@ -78,6 +78,7 @@ To increase limits, consider upgrading to Google Workspace.
 ### Testing
 
 Before going live, test with a small number of emails to ensure:
+
 - Emails are being sent successfully
 - Reply-To headers are working correctly
 - Attachments are included when needed
@@ -86,15 +87,18 @@ Before going live, test with a small number of emails to ensure:
 ### Troubleshooting
 
 **"Invalid credentials" error:**
+
 - Verify your Client ID, Client Secret, and Refresh Token are correct
 - Make sure you've enabled the Gmail API
 - Check that your OAuth consent screen is configured
 
 **"Daily user sending quota exceeded":**
+
 - You've hit the daily limit (500 for Gmail, 2000 for Workspace)
 - Wait 24 hours or upgrade to Google Workspace
 
 **Emails going to spam:**
+
 - Add SPF and DKIM records to your domain
 - Warm up your sending domain gradually
 - Ensure email content is not spammy
@@ -102,6 +106,7 @@ Before going live, test with a small number of emails to ensure:
 ## Alternative: Using a Service Account (Advanced)
 
 For higher volume sending, consider using:
+
 - SendGrid
 - Mailgun
 - Amazon SES
@@ -112,6 +117,6 @@ These services offer higher limits and better deliverability tracking.
 ## Support
 
 For more information, see:
+
 - [Gmail API Documentation](https://developers.google.com/gmail/api)
 - [OAuth 2.0 Documentation](https://developers.google.com/identity/protocols/oauth2)
-
