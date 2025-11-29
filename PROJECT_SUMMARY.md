@@ -54,22 +54,14 @@ EventAI is a comprehensive event planning automation platform that connects even
 - Event details and inquiry history
 - Create new event requests
 
-### 8. Partner Dashboard
-- View received inquiries
-- See full email content
-- Event details (date, attendees, budget)
-- Organizer information
-- Reply via email button
-- Status tracking (sent, opened, replied, declined)
-
-### 9. Event Detail Pages
+### 8. Event Detail Pages
 - Complete event information
 - Attached files display
 - List of contacted partners
 - Status tracking
 - Timeline of actions
 
-### 10. Confirmation Flow
+### 9. Confirmation Flow
 - Email preview before sending
 - Edit capability
 - Send confirmation page
