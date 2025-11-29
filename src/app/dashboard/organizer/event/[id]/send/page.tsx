@@ -130,7 +130,7 @@ export default function SendEventPage() {
       // Update event status
       await supabase
         .from('event_requests')
-        .update({ status: 'sent' })
+        .update({ status: 'sent' } as any)
         .eq('id', event.id);
 
       setSendSuccess(true);
