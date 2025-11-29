@@ -123,7 +123,7 @@ export default function CreateEventPage() {
           needs_sponsors: formData.needsSponsors,
           additional_notes: formData.additionalNotes || null,
           status: 'draft',
-        })
+        } as any)
         .select()
         .single();
 
@@ -141,7 +141,7 @@ export default function CreateEventPage() {
 
         const { error: filesError } = await supabase
           .from('event_files')
-          .insert(fileInserts);
+          .insert(fileInserts as any);
 
         if (filesError) throw filesError;
       }
@@ -163,7 +163,7 @@ export default function CreateEventPage() {
 
         const { error: partnersError } = await supabase
           .from('event_selected_partners')
-          .insert(partnerInserts);
+          .insert(partnerInserts as any);
 
         if (partnersError) throw partnersError;
       }
