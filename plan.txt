@@ -1,0 +1,207 @@
+Event Platform: UX Flow & Technical Specification (Gmail API Edition)
+
+Part 1: The Automation Strategy (Gmail API)
+
+Since this MVP utilizes the Gmail API rather than a transactional email service (like SendGrid), the architecture relies on a "Central Relay" model.
+
+The "Central Relay" Concept
+
+Instead of asking every Organizer to log in with their own Google account (which is complex and invasive), the platform uses one master Gmail account (e.g., notifications@your-mvp-app.com) to send all emails.
+
+To ensure the Partners know who they are talking to, we use the Reply-To Protocol.
+
+The Sender: Every email comes technically from notifications@your-mvp-app.com.
+
+The Reply-Path: We programmatically set the Reply-To header to the Organizer's Email (e.g., organizer@gmail.com).
+
+The Result: When the Partner clicks "Reply" in their inbox, the email address automatically switches to the Organizer's address. The Partner never needs to know the system sent it.
+
+The Authentication Mechanism (OAuth2)
+
+We do not use passwords. We use OAuth2 Tokens.
+
+Refresh Token (The Key): Your backend server holds a permanent "Refresh Token." This proves to Google that you own the master Gmail account.
+
+Access Token (The Pass): When a user clicks "Send," the server swaps the Refresh Token for a temporary Access Token valid for 1 hour.
+
+Execution: The server uses this temporary token to fire the emails via the Gmail API.
+
+Part 2: Complete UX Flow (Updated with System Logic)
+
+1. LANDING PAGE
+
+Purpose: Explain the platform + drive signups
+
+Sections:
+
+Hero: "Automate Your Event Planning in Minutes"
+
+How it works (3 steps): Sign up → Fill form → Get offers
+
+Benefits: Save time, compare offers, automated outreach
+
+CTA buttons: "I'm an Organizer" / "I'm a Partner"
+
+2. REGISTRATION FLOW
+
+2A. Choose Account Type
+
+Page: Registration type selection
+
+Two cards: "Register as Organizer" / "Register as Partner"
+
+2B. Organizer Registration Form
+
+Fields: Name, Email, Phone, Password.
+
+System Action: Create User ID in database.
+
+2C. Partner Registration Form
+
+Fields: Company Name, Service Type (Venue, Catering, etc.), City, Contact Name, Contact Email.
+
+System Action: Store partner data indexed by City and Service Type for fast retrieval later.
+
+3. ORGANIZER DASHBOARD
+
+Header: "Welcome, [Name]"
+
+Button: "+ Create New Event Request"
+
+List: Previous requests with status.
+
+4. EVENT REQUEST FORM (Multi-step)
+
+STEP 1: Event Basics
+
+Fields: Event Name, Type, Attendees, Date, Budget.
+
+STEP 2: Venue
+
+Action: User selects City.
+
+Display: List of Venues in that City.
+
+Selection: Checkbox logic.
+
+STEP 3: Catering
+
+Logic: Yes/No.
+
+Display: List of Catering companies in selected City.
+
+STEP 4: Merchandise (CRITICAL TECH STEP)
+
+Header: "Do you need merchandise?"
+
+Logic:
+
+IF Yes: Display Merchandise/Printing companies.
+
+THEN: Show File Upload Section.
+
+The File Upload Process:
+
+User Action: Drags & Drop file (Logo.png).
+
+System Action (Background): The browser uploads the file immediately to Cloud Storage (Firebase Storage/AWS S3).
+
+System Action: The Cloud Provider returns a public Download URL (e.g., https://storage.googleapis.com/.../logo.png).
+
+Data Storage: The App saves this URL to the "Event Request" object in the database.
+
+Why? The Gmail API cannot "hold" a file from a browser form. It needs to fetch the file from a URL or server buffer to attach it.
+
+STEP 5: Sponsors
+
+Logic: Yes/No selection of Sponsor partners.
+
+STEP 6: Additional Details
+
+Field: Additional Notes (textarea).
+
+Button: "Review & Send"
+
+5. REVIEW PAGE
+
+Summary: Shows Event Details, Selected Partners, and Uploaded Files.
+
+Email Preview: Shows the AI-template with placeholders.
+
+Button: "Send All Emails"
+
+6. CONFIRMATION PAGE (The Backend Trigger)
+
+User Action: User clicks "Send All Emails".
+
+System Backend Logic (The "Magic" Step):
+
+Authentication: Server wakes up and requests a fresh Access Token from Google using the stored Refresh Token.
+
+Iterator: Server loops through the list of selected partners.
+
+Construction: For each partner, it builds an email using Nodemailer:
+
+From: Master Account (notifications@app.com)
+
+To: Partner Email
+
+Reply-To: Current Organizer's Email
+
+Subject: "Inquiry: [Event Name]"
+
+Attachment Handling:
+
+If the partner is "Merchandise", the server fetches the file from the Cloud Storage URL and attaches it as a binary stream to the email.
+
+Transmission: The Server sends the packet to https://www.googleapis.com/gmail/v1/users/me/messages/send.
+
+Response: Gmail API returns 200 OK and a messageId.
+
+UI Result:
+
+Header: "Your requests have been sent! ✓"
+
+List:
+
+✉️ Grand Hotel Sofia - Sent
+
+✉️ PrintPro Merchandise - Sent (with 2 files)
+
+7. REQUEST STATUS DASHBOARD
+
+Display: Shows contacted partners.
+
+Note: Because we are using Gmail API, we can technically track if the email was sent, but tracking Opens (Read Receipts) is harder without a paid pixel-tracking service. For MVP, status defaults to "Sent".
+
+8. PARTNER DASHBOARD (Receiver View)
+
+Email Inbox: Partner receives an actual email.
+
+Platform Dashboard: If the partner logs into your app, they see the inquiry there too.
+
+Part 3: Technical Constraints & Guardrails
+
+To ensure this MVP works using Gmail API, the following rules apply:
+
+1. The 500 Daily Limit
+
+Constraint: A standard @gmail.com account can only send 500 emails per rolling 24-hour period.
+
+Impact: If you have 100 users sending 6 requests each, the system will crash.
+
+Solution: Monitor usage. If you approach 400, stop sending and alert the admin. Upgrade to Google Workspace (Business) to increase this limit to 2,000/day.
+
+2. File Size Limits
+
+Constraint: Gmail API has a total message size limit of 25MB.
+
+Impact: If a user uploads three 10MB PDFs, the email will fail to send.
+
+Guardrail: Limit file uploads in the Frontend (Step 4) to 5MB per file and a maximum of 3 files.
+
+3. Security (Tokens)
+
+Constraint: The OAuth2 "Refresh Token" allows anyone to send emails as your app.
+
+Security: This token must exist ONLY in your backend server environment variables (.env). It must never be visible in the frontend React/HTML code.
