@@ -4,32 +4,32 @@ export interface Database {
       profiles: {
         Row: Profile;
         Insert: Omit<Profile, 'created_at' | 'updated_at'>;
-        Update: Partial<Omit<Profile, 'id' | 'created_at'>>;
+        Update: Partial<Omit<Profile, 'id' | 'created_at' | 'updated_at'>>;
       };
       partners: {
         Row: Partner;
         Insert: Omit<Partner, 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Omit<Partner, 'id' | 'created_at'>>;
+        Update: Partial<Omit<Partner, 'id' | 'created_at' | 'updated_at'>>;
       };
       event_requests: {
         Row: EventRequest;
         Insert: Omit<EventRequest, 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Omit<EventRequest, 'id' | 'created_at'>>;
+        Update: Partial<Omit<EventRequest, 'id' | 'created_at' | 'updated_at'>>;
       };
       event_files: {
         Row: EventFile;
         Insert: Omit<EventFile, 'id' | 'created_at'>;
-        Update: Partial<Omit<EventFile, 'id'>>;
+        Update: Partial<Omit<EventFile, 'id' | 'created_at'>>;
       };
       event_inquiries: {
         Row: EventInquiry;
-        Insert: Omit<EventInquiry, 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Omit<EventInquiry, 'id' | 'created_at'>>;
+        Insert: Omit<EventInquiry, 'id' | 'created_at' | 'updated_at' | 'sent_at'>;
+        Update: Partial<Omit<EventInquiry, 'id' | 'created_at' | 'updated_at' | 'sent_at'>>;
       };
       event_selected_partners: {
         Row: EventSelectedPartner;
         Insert: Omit<EventSelectedPartner, 'id' | 'created_at'>;
-        Update: Partial<Omit<EventSelectedPartner, 'id'>>;
+        Update: Partial<Omit<EventSelectedPartner, 'id' | 'created_at'>>;
       };
     };
   };

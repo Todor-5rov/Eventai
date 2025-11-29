@@ -58,7 +58,7 @@ export default function RegisterPage() {
           user_type: userType!,
           full_name: fullName,
           phone: phone || null,
-        } as any);
+        });
 
       if (profileError) throw profileError;
 
@@ -74,7 +74,7 @@ export default function RegisterPage() {
             contact_name: contactName,
             contact_email: contactEmail,
             description: description || null,
-          } as any);
+          });
 
         if (partnerError) throw partnerError;
       }
