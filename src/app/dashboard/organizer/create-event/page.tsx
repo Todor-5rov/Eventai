@@ -127,12 +127,14 @@ export default function CreateEventPage() {
         .select()
         .single();
 
-      if (eventError) throw eventError;
+      if (eventError || !eventData) throw eventError || new Error('Failed to create event');
+      
+      const event = eventData as any;
 
       // Add files if any
       if (formData.files.length > 0) {
         const fileInserts = formData.files.map(file => ({
-          event_request_id: eventData.id,
+          event_request_id: event.id,
           file_name: file.name,
           file_url: file.url,
           file_size: file.size,
@@ -156,7 +158,7 @@ export default function CreateEventPage() {
 
       if (allSelectedPartners.length > 0) {
         const partnerInserts = allSelectedPartners.map(p => ({
-          event_request_id: eventData.id,
+          event_request_id: event.id,
           partner_id: p.partner_id,
           service_type: p.service_type,
         }));
@@ -169,7 +171,7 @@ export default function CreateEventPage() {
       }
 
       // Redirect to confirmation page
-      router.push(`/dashboard/organizer/event/${eventData.id}/send`);
+      router.push(`/dashboard/organizer/event/${event.id}/send`);
     } catch (error) {
       console.error('Error creating event:', error);
       alert('Failed to create event request. Please try again.');
