@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
             status: "sent",
             gmail_message_id: info.messageId,
             has_attachment: preview.hasAttachment,
-          } as any);
+          });
 
         if (inquiryError) {
           console.error("Error recording inquiry:", inquiryError);
